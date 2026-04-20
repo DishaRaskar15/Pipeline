@@ -1,22 +1,27 @@
 pipeline {
     agent any
-
     stages {
-        stage('Clone') {
+        stage('Source Checkout') {
             steps {
-                echo 'Cloning repository...'
+                checkout scm
+                echo 'Code checked out successfully!'
             }
         }
-
-        stage('Build') {
+        stage('Quality Gate') {
             steps {
-                bat 'dir'
+                script {
+                    if (fileExists('index.html')) {
+                        echo 'index.html found!'
+                    } else {
+                        error 'index.html not found!'
+                    }
+                }
             }
         }
-
-        stage('Run') {
+        stage('Deploy to XAMPP') {
             steps {
-                bat 'echo Hello from Disha Pipeline!'
+                bat 'xcopy /E /Y /I "." "C:\\xampp\\htdocs\\portfolio\\"'
+                echo 'Deployed to XAMPP successfully!'
             }
         }
     }
