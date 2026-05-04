@@ -1,27 +1,21 @@
 pipeline {
     agent any
+
     stages {
-        stage('Source Checkout') {
+
+        stage('Build') {
             steps {
-                checkout scm
-                echo 'Code checked out successfully!'
+                echo "Building..."
             }
         }
-        stage('Quality Gate') {
+
+        stage('Deploy') {
             steps {
-                script {
-                    if (fileExists('index.html')) {
-                        echo 'index.html found!'
-                    } else {
-                        error 'index.html not found!'
-                    }
-                }
-            }
-        }
-        stage('Deploy to XAMPP') {
-            steps {
-                bat 'xcopy /E /Y /I "." "C:\\xampp\\htdocs\\portfolio\\"'
-                echo 'Deployed to XAMPP successfully!'
+                bat '''
+                if not exist C:\\nginx\\html mkdir C:\\nginx\\html
+                del /Q C:\\nginx\\html\\*
+                xcopy /E /I /Y * C:\\nginx\\html
+                '''
             }
         }
     }
